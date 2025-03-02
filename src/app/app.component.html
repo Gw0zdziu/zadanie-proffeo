@@ -1,30 +1,36 @@
 <div class="flex justify-center flex-col m-[12px]">
     <mat-form-field>
-      <mat-label>Znajdź</mat-label>
-      <input (change)="searchMovies($event)" type="text" matInput>
+      <mat-label>Znajdź filmy</mat-label>
+      <input (change)="searchMovies($event)" type="text" matInput #inputSearch>
     </mat-form-field>
-    <table mat-table [dataSource]="dataTable">
-        <ng-container matColumnDef="poster">
-          <th mat-header-cell *matHeaderCellDef> Poster </th>
+    <mat-form-field>
+      <mat-label>Filtruj filmy</mat-label>
+      <input [(ngModel)]="filterInput" (keyup)="filterMovies($event)" type="text" matInput #inputFilter>
+    </mat-form-field>
+    <table mat-table [dataSource]="dataTable" matSort  (matSortChange)="sortChange($event)">
+        <ng-container matColumnDef="Poster">
+          <th mat-header-cell *matHeaderCellDef > Plakat </th>
           <td mat-cell *matCellDef="let element">
-            <img [ngSrc]="element.Poster" width="100" height="200">
+            <img class="w-[100] h-[200]" [src]="element.Poster" >
           </td>
         </ng-container>
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef> Title </th>
-          <td mat-cell *matCellDef="let element"> {{element.Title}} </td>
+        <ng-container matColumnDef="Title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tytuł </th>
+          <td  mat-cell *matCellDef="let element"><span class="text-sm"> {{element.Title}} </span></td>
         </ng-container>
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef> Type </th>
+        <ng-container matColumnDef="Type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Typ </th>
           <td mat-cell *matCellDef="let element"> {{element.Type}} </td>
         </ng-container>
-        <ng-container matColumnDef="year">
-          <th mat-header-cell *matHeaderCellDef> Year </th>
+        <ng-container matColumnDef="Year">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rok </th>
           <td mat-cell *matCellDef="let element"> {{element.Year}} </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center text-xl" colspan="4">{{errorResponse}}</td>
+      </tr>
       </table>
-    <mat-paginator [pageSize]="dataTable.data.length"  aria-label="Select page of users"></mat-paginator>
 </div>
 
