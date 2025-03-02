@@ -23,7 +23,7 @@ import {JsonPipe} from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [MatFormField, MatInput, MatLabel, MatTable, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatRowDef, FormsModule, MatNoDataRow, MatSort, MatSortHeader, JsonPipe],
+  imports: [MatFormField, MatInput, MatLabel, MatTable, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatRowDef, FormsModule, MatNoDataRow, MatSort, MatSortHeader],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
