@@ -1,4 +1,4 @@
-<div class="flex justify-center flex-col m-[12px]">
+<div class="flex justify-center flex-col mx-auto w-[90%]  md:w-[50%]">
     <mat-form-field>
       <mat-label>Znajdź filmy</mat-label>
       <input (change)="searchMovies($event)" type="text" matInput #inputSearch>
@@ -7,25 +7,20 @@
       <mat-label>Filtruj filmy</mat-label>
       <input [(ngModel)]="filterInput" (keyup)="filterMovies($event)" type="text" matInput #inputFilter>
     </mat-form-field>
-    <table mat-table [dataSource]="dataTable" matSort  (matSortChange)="sortChange($event)">
-        <ng-container matColumnDef="Poster">
-          <th mat-header-cell *matHeaderCellDef > Plakat </th>
+    <table mat-table cdkDropListGroup  [dataSource]="dataTable" matSort>
+      @for (column of columns; track $index) {
+        <ng-container [matColumnDef]="column">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef
+          > {{ column }} </th>
           <td mat-cell *matCellDef="let element">
-            <img class="w-[100] h-[200]" [src]="element.Poster" >
+            @if (column === 'Poster') {
+              <img class="w-16 md:w-32 max-w-full max-h-full" [src]="element[column]" >
+            } @else {
+              {{element[column]}}
+            }
           </td>
         </ng-container>
-        <ng-container matColumnDef="Title">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tytuł </th>
-          <td  mat-cell *matCellDef="let element"><span class="text-sm"> {{element.Title}} </span></td>
-        </ng-container>
-        <ng-container matColumnDef="Type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Typ </th>
-          <td mat-cell *matCellDef="let element"> {{element.Type}} </td>
-        </ng-container>
-        <ng-container matColumnDef="Year">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rok </th>
-          <td mat-cell *matCellDef="let element"> {{element.Year}} </td>
-        </ng-container>
+      }
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr mat-row *matRowDef="let row; columns: columns"></tr>
       <tr class="mat-row" *matNoDataRow>

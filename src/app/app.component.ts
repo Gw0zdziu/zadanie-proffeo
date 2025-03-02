@@ -18,23 +18,22 @@ import {
   MatTableDataSource
 } from '@angular/material/table';
 import {FormsModule} from '@angular/forms';
-import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
-import {JsonPipe} from '@angular/common';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {CdkDropListGroup} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
-  imports: [MatFormField, MatInput, MatLabel, MatTable, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatRowDef, FormsModule, MatNoDataRow, MatSort, MatSortHeader],
+  imports: [MatFormField, MatInput, MatLabel, MatTable, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatRowDef, FormsModule, MatNoDataRow, MatSort, MatSortHeader, CdkDropListGroup],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, AfterViewInit {
   dataTable = new MatTableDataSource<IMovie>([])
-  columns: string[] = ['Poster', 'Title', 'Type', 'Year'];
+  columns: any[] = ['Poster', 'Title', 'Type', 'Year'];
   filterInput: any;
   errorResponse: string = '';
-  response: string = '';
   @ViewChild(MatSort) matSort: MatSort;
-
+  @ViewChild('table', {static: true}) table: MatTable<IMovie>;
   constructor(private omdbapiService: OmdbapiService) {}
 
   ngOnInit() {
@@ -51,21 +50,18 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dataTable.filter = '';
     const inputValue = (event.target as HTMLInputElement).value;
     this.omdbapiService.getMovies(inputValue.trim().toLowerCase()).subscribe(x => {
+      console.log(x.Search)
       if (x.Response === 'True'){
         this.dataTable.data = x.Search;
       } else if (x.Response === 'False') {
         this.dataTable.data = [];
         this.errorResponse = x.Error;
       }
-
     })
   }
 
   filterMovies(event: Event) {
     const inputValue = (event.target as HTMLInputElement).value;
     this.dataTable.filter = inputValue.trim().toLowerCase();
-  }
-
-  sortChange(event: Sort) {
   }
 }
