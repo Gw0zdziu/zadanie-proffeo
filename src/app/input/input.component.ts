@@ -4,7 +4,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatInput} from '@angular/material/input';
 
 @Component({
-  selector: 'app-input-search',
+  selector: 'app-input',
   imports: [
     MatLabel,
     MatFormField,
@@ -12,10 +12,10 @@ import {MatInput} from '@angular/material/input';
     MatInput,
     MatSuffix
   ],
-  templateUrl: './input-search.component.html',
-  styleUrl: './input-search.component.css'
+  templateUrl: './input.component.html',
+  styleUrl: './input.component.css'
 })
-export class InputSearchComponent {
+export class InputComponent {
   searchMoviesOutput = output<Event>();
   loading = input(false)
 
