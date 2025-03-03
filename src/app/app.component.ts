@@ -1,7 +1,5 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {OmdbapiService} from '../shared/apis/omdbapi/omdbapi.service';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
 import {IMovie} from '../shared/models/movie';
 import {
   MatCell,
@@ -19,21 +17,49 @@ import {
 } from '@angular/material/table';
 import {FormsModule} from '@angular/forms';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
-import {CdkDropListGroup} from '@angular/cdk/drag-drop';
+import {delay, finalize, tap} from 'rxjs';
+import {InputSearchComponent} from './input-search/input-search.component';
+import {InputFilterComponent} from './input-filter/input-filter.component';
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
-  imports: [MatFormField, MatInput, MatLabel, MatTable, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatRowDef, FormsModule, MatNoDataRow, MatSort, MatSortHeader, CdkDropListGroup],
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRow,
+    MatRowDef,
+    FormsModule,
+    MatNoDataRow,
+    MatSort,
+    MatSortHeader,
+    InputSearchComponent,
+    InputFilterComponent,
+    CdkDropList,
+    CdkDrag
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, AfterViewInit {
   dataTable = new MatTableDataSource<IMovie>([])
-  columns: any[] = ['Poster', 'Title', 'Type', 'Year'];
-  filterInput: any;
+  columns: string[] = [
+    'Poster',
+    'Title',
+    'Type',
+    'Year'
+  ];
+  searchInputValue: string;
   errorResponse: string = '';
+  loading = false;
   @ViewChild(MatSort) matSort: MatSort;
-  @ViewChild('table', {static: true}) table: MatTable<IMovie>;
+
   constructor(private omdbapiService: OmdbapiService) {}
 
   ngOnInit() {
@@ -45,17 +71,22 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dataTable.sort = this.matSort;
   }
 
-  searchMovies(event: Event){
-    this.filterInput = [];
+  searchMovies(event: Event) {
     this.dataTable.filter = '';
-    const inputValue = (event.target as HTMLInputElement).value;
-    this.omdbapiService.getMovies(inputValue.trim().toLowerCase()).subscribe(x => {
-      console.log(x.Search)
-      if (x.Response === 'True'){
-        this.dataTable.data = x.Search;
-      } else if (x.Response === 'False') {
-        this.dataTable.data = [];
-        this.errorResponse = x.Error;
+    this.searchInputValue = (event.target as HTMLInputElement).value;
+    this.omdbapiService.getMovies(this.searchInputValue.trim().toLowerCase()).pipe(
+      tap(() => this.loading = true),
+      delay(600),
+      finalize(() => this.loading = false),
+    ).subscribe({
+      next: x => {
+        console.log(x)
+        if (x.Response === 'True') {
+          this.dataTable.data = x.Search;
+        } else if (x.Response === 'False') {
+          this.dataTable.data = [];
+          this.errorResponse = x.Error;
+        }
       }
     })
   }
@@ -63,5 +94,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   filterMovies(event: Event) {
     const inputValue = (event.target as HTMLInputElement).value;
     this.dataTable.filter = inputValue.trim().toLowerCase();
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 }
