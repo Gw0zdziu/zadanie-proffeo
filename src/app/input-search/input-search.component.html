@@ -1,0 +1,9 @@
+<mat-form-field class="w-full">
+  <mat-label>Find movies</mat-label>
+  <input (keyup)="searchMovies($event)" type="text" matInput>
+  <ng-container matSuffix>
+  @if (loading()) {
+    <mat-spinner strokeWidth="4" diameter="32" class="mr-4"></mat-spinner>
+  }
+  </ng-container>
+</mat-form-field>
