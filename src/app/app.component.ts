@@ -20,6 +20,7 @@ import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
 import {delay, finalize, tap} from 'rxjs';
 import {CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {InputComponent} from './input/input.component';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -41,6 +42,7 @@ import {InputComponent} from './input/input.component';
     CdkDropList,
     MatSortModule,
     InputComponent,
+    NgOptimizedImage,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

@@ -2,7 +2,7 @@
   <app-input inputLabel='Search movies' [loading]="loadingSearch" (searchMoviesOutput)="searchMovies($event)"></app-input>
   @if (dataTable.data.length !== 0) {
     <app-input inputLabel='Filter movies' [loading]="loadingFilter" (searchMoviesOutput)="filterMovies($event)"></app-input>
-    <div class="overflow-x-auto shadow-xl">
+    <div class="overflow-x-auto shadow-lg">
       <table mat-table matSort [dataSource]="dataTable" cdkDropList
              cdkDropListOrientation="horizontal"
              cdkDropListLockAxis="x"
@@ -12,11 +12,13 @@
           <ng-container [matColumnDef]="column">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }}</th>
             <td mat-cell *matCellDef="let element">
-              @if (column === 'Poster') {
-                <img class="w-16 md:w-32 max-w-full max-h-full" [src]="element[column]">
-              } @else {
-                <span class="text-balance text-xl ">{{ element[column] }}</span>
-              }
+              <div class="flex items-center h-[100px]">
+                @if (column === 'Poster') {
+                  <img class="w-16 md:w-32 max-w-[200px] max-h-[300px]" alt="movie-poster" ngSrc='{{element[column]}}' width="300" height="200">
+                } @else {
+                  <span class="text-nowrap text-xl ">{{ element[column] }}</span>
+                }
+              </div>
             </td>
           </ng-container>
         }
