@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, inject, ViewChild} from '@angular/core';
 import {OmdbapiService} from '../shared/apis/omdbapi/omdbapi.service';
 import {IMovie} from '../shared/models/movie';
 import {
@@ -16,11 +16,11 @@ import {
   MatTableDataSource
 } from '@angular/material/table';
 import {FormsModule} from '@angular/forms';
-import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
+import {MatSort, MatSortHeader, MatSortModule, Sort} from '@angular/material/sort';
 import {delay, finalize, tap} from 'rxjs';
-import {CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {InputComponent} from './input/input.component';
-import {NgOptimizedImage} from '@angular/common';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-root',
@@ -42,12 +42,13 @@ import {NgOptimizedImage} from '@angular/common';
     CdkDropList,
     MatSortModule,
     InputComponent,
-    NgOptimizedImage,
+    CdkDrag,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+  private _liveAnnouncer = inject(LiveAnnouncer);
   dataTable = new MatTableDataSource<IMovie>([])
   columns: string[] = [
     'Poster',
@@ -107,7 +108,12 @@ export class AppComponent {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 
-  sort() {
+  sort(event: Sort) {
     this.dataTable.sort = this.matSort;
+    if (event.direction) {
+      this._liveAnnouncer.announce(`Sorted ${event.direction}ending`)
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
   }
 }

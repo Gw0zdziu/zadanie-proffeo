@@ -6,17 +6,17 @@
       <table mat-table matSort [dataSource]="dataTable" cdkDropList
              cdkDropListOrientation="horizontal"
              cdkDropListLockAxis="x"
-             (matSortChange)="sort()"
+             (matSortChange)="sort($event)"
              (cdkDropListDropped)="drop($event)">
         @for (column of columns; track $index) {
           <ng-container [matColumnDef]="column">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }}</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header cdkDrag [sortActionDescription]="'Sort by ' + column">{{ column }}</th>
             <td mat-cell *matCellDef="let element">
-              <div class="flex items-center h-[100px]">
+              <div class="flex items-center  ">
                 @if (column === 'Poster') {
-                  <img class="w-16 md:w-32 max-w-[200px] max-h-[300px]" alt="movie-poster" ngSrc='{{element[column]}}' width="300" height="200">
+                  <img class=" md:w-32 lg:w-32" alt="movie-poster" src='{{element[column]}}' >
                 } @else {
-                  <span class="text-nowrap text-xl ">{{ element[column] }}</span>
+                  <span class="text-balance text-lg">{{ element[column] }}</span>
                 }
               </div>
             </td>
