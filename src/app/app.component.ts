@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {OmdbapiService} from '../shared/apis/omdbapi/omdbapi.service';
 import {IMovie} from '../shared/models/movie';
 import {
@@ -16,11 +16,10 @@ import {
   MatTableDataSource
 } from '@angular/material/table';
 import {FormsModule} from '@angular/forms';
-import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
 import {delay, finalize, tap} from 'rxjs';
-import {InputSearchComponent} from './input-search/input-search.component';
-import {InputFilterComponent} from './input-filter/input-filter.component';
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {InputComponent} from './input/input.component';
 
 @Component({
   selector: 'app-root',
@@ -39,15 +38,14 @@ import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/d
     MatNoDataRow,
     MatSort,
     MatSortHeader,
-    InputSearchComponent,
-    InputFilterComponent,
     CdkDropList,
-    CdkDrag
+    MatSortModule,
+    InputComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent {
   dataTable = new MatTableDataSource<IMovie>([])
   columns: string[] = [
     'Poster',
@@ -57,46 +55,58 @@ export class AppComponent implements OnInit, AfterViewInit {
   ];
   searchInputValue: string;
   errorResponse: string = '';
-  loading = false;
-  @ViewChild(MatSort) matSort: MatSort;
+  loadingSearch = false;
+  loadingFilter = false;
+  @ViewChild(MatSort) matSort!: MatSort;
+  defaultImage: string = 'image-not-found.jpg';
 
-  constructor(private omdbapiService: OmdbapiService) {}
-
-  ngOnInit() {
-
-
-  }
-
-  ngAfterViewInit() {
-    this.dataTable.sort = this.matSort;
+  constructor(private omdbapiService: OmdbapiService) {
   }
 
   searchMovies(event: Event) {
     this.dataTable.filter = '';
     this.searchInputValue = (event.target as HTMLInputElement).value;
-    this.omdbapiService.getMovies(this.searchInputValue.trim().toLowerCase()).pipe(
-      tap(() => this.loading = true),
-      delay(600),
-      finalize(() => this.loading = false),
-    ).subscribe({
-      next: x => {
-        console.log(x)
-        if (x.Response === 'True') {
-          this.dataTable.data = x.Search;
-        } else if (x.Response === 'False') {
-          this.dataTable.data = [];
-          this.errorResponse = x.Error;
+    if (this.searchInputValue !== '') {
+      this.omdbapiService.getMovies(this.searchInputValue.trim().toLowerCase()).pipe(
+        tap(() => this.loadingSearch = true),
+        delay(500),
+        finalize(() => this.loadingSearch = false),
+      ).subscribe({
+        next: x => {
+          if (x.Response === 'True') {
+            x.Search = x.Search.map((value) => {
+              if (value.Poster === 'N/A'){
+                return {...value, Poster: this.defaultImage};
+              } else
+                return value
+            })
+            this.dataTable.data = x.Search;
+          } else if (x.Response === 'False') {
+            this.dataTable.data = [];
+            this.errorResponse = x.Error;
+          }
         }
-      }
-    })
+      })
+    } else {
+      this.dataTable.data = []
+      this.errorResponse = '';
+    }
   }
 
   filterMovies(event: Event) {
-    const inputValue = (event.target as HTMLInputElement).value;
-    this.dataTable.filter = inputValue.trim().toLowerCase();
+    this.loadingFilter = true;
+    setTimeout(() => {
+      const inputValue = (event.target as HTMLInputElement).value;
+      this.dataTable.filter = inputValue.trim().toLowerCase();
+      this.loadingFilter = false;
+    }, 500);
   }
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
+  }
+
+  sort() {
+    this.dataTable.sort = this.matSort;
   }
 }
