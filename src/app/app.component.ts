@@ -53,7 +53,6 @@ export class AppComponent {
     'Type',
     'Year'
   ];
-  searchInputValue: string;
   errorResponse: string = '';
   loadingSearch = false;
   loadingFilter = false;
@@ -65,9 +64,9 @@ export class AppComponent {
 
   searchMovies(event: Event) {
     this.dataTable.filter = '';
-    this.searchInputValue = (event.target as HTMLInputElement).value;
-    if (this.searchInputValue !== '') {
-      this.omdbapiService.getMovies(this.searchInputValue.trim().toLowerCase()).pipe(
+    const searchInputValue = (event.target as HTMLInputElement).value.trim().toLowerCase()
+    if (searchInputValue !== '') {
+      this.omdbapiService.getMovies(searchInputValue).pipe(
         tap(() => this.loadingSearch = true),
         delay(500),
         finalize(() => this.loadingSearch = false),
