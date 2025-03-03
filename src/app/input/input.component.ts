@@ -18,6 +18,7 @@ import {MatInput} from '@angular/material/input';
 export class InputComponent {
   searchMoviesOutput = output<Event>();
   loading = input(false)
+  inputLabel = input('');
 
 
   searchMovies(event: Event) {

@@ -1,5 +1,5 @@
 <mat-form-field class="w-full">
-  <mat-label>Find movies</mat-label>
+  <mat-label>{{inputLabel()}}</mat-label>
   <input  (keyup)="searchMovies($event)" type="text" matInput>
   <ng-container matSuffix>
   @if (loading()) {
